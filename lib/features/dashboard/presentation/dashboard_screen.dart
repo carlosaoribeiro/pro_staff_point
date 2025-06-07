@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart'; // necessário para o context.push
+import '../../../application/auth_controller.dart';
 import '../../../auth/application/auth_controller.dart';
 
 class DashboardScreen extends ConsumerWidget {
@@ -12,7 +14,7 @@ class DashboardScreen extends ConsumerWidget {
         title: 'Funcionários',
         icon: Icons.people,
         onTap: () {
-          // TODO: Navegar para employees
+          context.push('/employees'); // ✅ redireciona para a tela de funcionários
         },
       ),
       _DashboardCard(

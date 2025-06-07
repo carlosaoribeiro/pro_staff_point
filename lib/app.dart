@@ -3,11 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+// Application
 import 'application/auth_controller.dart';
 import 'features/auth/application/auth_controller.dart';
+
+// Domain
 import 'features/auth/domain/auth_state.dart';
+
+// Presentation (screens)
 import 'features/auth/presentation/login_screen.dart';
 import 'features/dashboard/presentation/dashboard_screen.dart';
+import 'features/employees/presentation/employees_screen.dart';
+import 'features/time_tracking/presentation/time_tracking_screen.dart';
+import 'features/vacations/presentation/vacations_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authController = ref.watch(authControllerProvider.notifier);
@@ -33,6 +41,18 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/dashboard',
         builder: (context, state) => const DashboardScreen(),
+      ),
+      GoRoute(
+        path: '/employees',
+        builder: (context, state) => const EmployeesScreen(),
+      ),
+      GoRoute(
+        path: '/time-tracking',
+        builder: (context, state) => const TimeTrackingScreen(),
+      ),
+      GoRoute(
+        path: '/vacations',
+        builder: (context, state) => const VacationsScreen(),
       ),
     ],
   );
