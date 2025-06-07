@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../application/employee_controller.dart';
-
 
 class EmployeesScreen extends ConsumerWidget {
   const EmployeesScreen({super.key});
@@ -12,22 +12,20 @@ class EmployeesScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Funcionários')),
-      body: ListView.separated(
-        padding: const EdgeInsets.all(16),
+      body: ListView.builder(
         itemCount: employees.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
         itemBuilder: (context, index) {
           final employee = employees[index];
           return ListTile(
             title: Text(employee.name),
             subtitle: Text(employee.role),
-            leading: CircleAvatar(child: Text(employee.name[0])),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () {
-              // Futuro: navegar para detalhes
-            },
+            onTap: () => context.push('/employees/${employee.id}'),
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.push('/employees/form'),
+        child: const Icon(Icons.add),
       ),
     );
   }

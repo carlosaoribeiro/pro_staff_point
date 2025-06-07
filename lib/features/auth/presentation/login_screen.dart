@@ -18,7 +18,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _passwordController = TextEditingController();
 
   void _submit() {
-    if (_formKey.currentState?.validate() ?? false) {
+    if (_formKey.currentState!.validate()) {
       final email = _emailController.text.trim();
       final password = _passwordController.text.trim();
       ref.read(authControllerProvider.notifier).login(email, password);
@@ -30,37 +30,60 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final authState = ref.watch(authControllerProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('StaffPointPro')),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(labelText: 'E-mail'),
-                  validator: (value) =>
-                  value!.isEmpty ? 'Informe o e-mail' : null,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _passwordController,
-                  decoration: const InputDecoration(labelText: 'Senha'),
-                  obscureText: true,
-                  validator: (value) =>
-                  value!.isEmpty ? 'Informe a senha' : null,
-                ),
-                const SizedBox(height: 24),
-                authState.status == AuthStatus.loading
-                    ? const CircularProgressIndicator()
-                    : ElevatedButton(
-                  onPressed: _submit,
-                  child: const Text('Entrar'),
-                ),
-              ],
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'StaffPointPro',
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                  const SizedBox(height: 40),
+                  TextFormField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(
+                      labelText: 'E-mail',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) =>
+                    value!.isEmpty ? 'Informe o e-mail' : null,
+                  ),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    controller: _passwordController,
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Senha',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) =>
+                    value!.isEmpty ? 'Informe a senha' : null,
+                  ),
+                  const SizedBox(height: 30),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: authState.status == AuthStatus.loading
+                          ? null
+                          : _submit,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: authState.status == AuthStatus.loading
+                          ? const CircularProgressIndicator()
+                          : const Text('Entrar'),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

@@ -15,4 +15,12 @@ class EmployeeController extends StateNotifier<List<Employee>> {
       Employee(id: '3', name: 'Carlos Lima', role: 'Product Owner'),
     ];
   }
+
+  void saveEmployee(Employee employee) {
+    state = [
+      for (final e in state)
+        if (e.id == employee.id) employee else e,
+      if (!state.any((e) => e.id == employee.id)) employee,
+    ];
+  }
 }
