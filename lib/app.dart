@@ -14,6 +14,8 @@ import 'features/auth/domain/auth_state.dart';
 import 'features/auth/presentation/login_screen.dart';
 import 'features/dashboard/presentation/dashboard_screen.dart';
 import 'features/employees/presentation/employees_screen.dart';
+import 'features/employees/presentation/employee_form_screen.dart';
+import 'features/employees/presentation/employee_detail_screen.dart';
 import 'features/time_tracking/presentation/time_tracking_screen.dart';
 import 'features/vacations/presentation/vacations_screen.dart';
 
@@ -47,6 +49,17 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const EmployeesScreen(),
       ),
       GoRoute(
+        path: '/employees/form',
+        builder: (context, state) => const EmployeeFormScreen(),
+      ),
+      GoRoute(
+        path: '/employees/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return EmployeeDetailScreen(employeeId: id);
+        },
+      ),
+      GoRoute(
         path: '/time-tracking',
         builder: (context, state) => const TimeTrackingScreen(),
       ),
@@ -73,7 +86,6 @@ class StaffPointProApp extends ConsumerWidget {
   }
 }
 
-/// Permite que o GoRouter escute mudanças de um stream (como do AuthController)
 class GoRouterRefreshStream extends ChangeNotifier {
   GoRouterRefreshStream(Stream<dynamic> stream) {
     _subscription = stream.asBroadcastStream().listen((_) => notifyListeners());
