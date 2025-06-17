@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../application/employee_controller.dart';
 import '../domain/employee.dart';
 
@@ -14,14 +15,15 @@ class EmployeeFormScreen extends ConsumerStatefulWidget {
 
 class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  late TextEditingController _nameController;
-  late TextEditingController _roleController;
+  late final TextEditingController _nameController;
+  late final TextEditingController _roleController;
 
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.employee?.name ?? '');
-    _roleController = TextEditingController(text: widget.employee?.role ?? '');
+    final employee = widget.employee;
+    _nameController = TextEditingController(text: employee?.name ?? '');
+    _roleController = TextEditingController(text: employee?.role ?? '');
   }
 
   @override
@@ -31,24 +33,32 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
     super.dispose();
   }
 
-  void _save() {
+  Future<void> _submit() async {
     if (_formKey.currentState!.validate()) {
-      final id = widget.employee?.id ?? DateTime.now().millisecondsSinceEpoch.toString();
-      final newEmployee = Employee(
-        id: id,
-        name: _nameController.text,
-        role: _roleController.text,
+      final isEditing = widget.employee != null;
+      final employee = Employee(
+        id: isEditing ? widget.employee!.id : DateTime.now().millisecondsSinceEpoch.toString(),
+        name: _nameController.text.trim(),
+        role: _roleController.text.trim(),
       );
-      ref.read(employeeControllerProvider.notifier).saveEmployee(newEmployee);
-      Navigator.of(context).pop();
+
+      final controller = ref.read(employeeControllerProvider.notifier);
+      if (isEditing) {
+        await controller.update(employee);
+      } else {
+        await controller.add(employee);
+      }
+
+      if (mounted) context.pop();
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isEditing = widget.employee != null;
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.employee == null ? 'Novo Funcionário' : 'Editar Funcionário'),
+        title: Text(isEditing ? 'Editar Funcionário' : 'Novo Funcionário'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -59,17 +69,19 @@ class _EmployeeFormScreenState extends ConsumerState<EmployeeFormScreen> {
               TextFormField(
                 controller: _nameController,
                 decoration: const InputDecoration(labelText: 'Nome'),
-                validator: (value) => value!.isEmpty ? 'Informe o nome' : null,
+                validator: (value) =>
+                value == null || value.isEmpty ? 'Informe o nome' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _roleController,
                 decoration: const InputDecoration(labelText: 'Cargo'),
-                validator: (value) => value!.isEmpty ? 'Informe o cargo' : null,
+                validator: (value) =>
+                value == null || value.isEmpty ? 'Informe o cargo' : null,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
               ElevatedButton(
-                onPressed: _save,
+                onPressed: _submit,
                 child: const Text('Salvar'),
               ),
             ],

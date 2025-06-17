@@ -2,10 +2,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:collection/collection.dart';
 
 // Application
 import 'application/auth_controller.dart';
 import 'features/auth/application/auth_controller.dart';
+import 'features/employees/application/employee_controller.dart';
 
 // Domain
 import 'features/auth/domain/auth_state.dart';
@@ -44,14 +46,37 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/dashboard',
         builder: (context, state) => const DashboardScreen(),
       ),
+      // Rota para a listagem de funcionários
       GoRoute(
         path: '/employees',
         builder: (context, state) => const EmployeesScreen(),
       ),
+      // Rota para criar novo funcionário
       GoRoute(
         path: '/employees/form',
         builder: (context, state) => const EmployeeFormScreen(),
       ),
+      // Rota para editar funcionário com id
+      GoRoute(
+        path: '/employees/form/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return Consumer(
+            builder: (context, ref, _) {
+              final employee = ref
+                  .watch(employeeControllerProvider)
+                  .firstWhereOrNull((e) => e.id == id);
+              if (employee == null) {
+                return const Scaffold(
+                  body: Center(child: Text('Funcionário não encontrado')),
+                );
+              }
+              return EmployeeFormScreen(employee: employee);
+            },
+          );
+        },
+      ),
+      // Rota para detalhes do funcionário
       GoRoute(
         path: '/employees/:id',
         builder: (context, state) {
