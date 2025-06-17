@@ -5,6 +5,19 @@ import '../domain/employee.dart';
 class EmployeeRepository {
   static Database? _database;
 
+  Future<void> updateEmployee(Employee employee) async {
+    final db = await database;
+    await db.update(
+      'employees',
+      {
+        'name': employee.name,
+        'role': employee.role,
+      },
+      where: 'id = ?',
+      whereArgs: [employee.id],
+    );
+  }
+
   Future<Database> get database async {
     return _database ??= await _initDB();
   }
@@ -41,11 +54,20 @@ class EmployeeRepository {
 
   Future<void> addEmployee(Employee employee) async {
     final db = await database;
-    await db.insert('employees', {
-      'id': employee.id,
-      'name': employee.name,
-      'role': employee.role,
-    });
+
+    await db.insert(
+      'employees',
+      {
+        'id': employee.id,
+        'name': employee.name,
+        'role': employee.role,
+      },
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+
+    // DEBUG: imprime todos os registros no banco
+    final result = await db.query('employees');
+    print('🟢 Funcionários no banco: $result');
   }
 
   Future<void> deleteAll() async {
@@ -53,3 +75,5 @@ class EmployeeRepository {
     await db.delete('employees');
   }
 }
+
+

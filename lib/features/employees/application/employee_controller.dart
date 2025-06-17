@@ -1,26 +1,50 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/employee.dart';
+import '../data/employee_repository.dart';
 
-final employeeControllerProvider = StateNotifierProvider<EmployeeController, List<Employee>>(
-      (ref) => EmployeeController(),
+final employeeControllerProvider =
+StateNotifierProvider<EmployeeController, List<Employee>>(
+      (ref) => EmployeeController(EmployeeRepository()),
 );
 
 class EmployeeController extends StateNotifier<List<Employee>> {
-  EmployeeController() : super(_dummyEmployees());
+  final EmployeeRepository _repository;
+  late List<Employee> _allEmployees;
 
-  static List<Employee> _dummyEmployees() {
-    return [
-      Employee(id: '1', name: 'João Silva', role: 'Desenvolvedor'),
-      Employee(id: '2', name: 'Maria Souza', role: 'Designer'),
-      Employee(id: '3', name: 'Carlos Lima', role: 'Product Owner'),
-    ];
+  EmployeeController(this._repository) : super([]) {
+    _loadEmployees();
   }
 
-  void saveEmployee(Employee employee) {
-    state = [
-      for (final e in state)
-        if (e.id == employee.id) employee else e,
-      if (!state.any((e) => e.id == employee.id)) employee,
-    ];
+  Future<void> _loadEmployees() async {
+    final employees = await _repository.getEmployees();
+    _allEmployees = employees;
+    state = employees;
+  }
+
+  Future<void> add(Employee employee) async {
+    await _repository.addEmployee(employee);
+    await _loadEmployees();
+    print('🔄 Salvando no banco: ${employee.toString()}');
+  }
+
+  // Método update adicionado
+  Future<void> update(Employee employee) async {
+    await _repository.updateEmployee(employee);
+    await _loadEmployees();
+    print('🔄 Atualizando no banco: ${employee.toString()}');
+  }
+
+  void filter(String query) async {
+    final allEmployees = await _repository.getEmployees();
+
+    if (query.isEmpty) {
+      state = allEmployees;
+    } else {
+      state = allEmployees
+          .where((e) =>
+      e.name.toLowerCase().contains(query.toLowerCase()) ||
+          e.role.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    }
   }
 }
