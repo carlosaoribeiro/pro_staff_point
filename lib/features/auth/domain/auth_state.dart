@@ -7,9 +7,9 @@ enum AuthStatus {
 class AuthState {
   final AuthStatus status;
 
-  const AuthState._(this.status);
+  const AuthState._({required this.status});
 
-  const AuthState.authenticated() : this._(AuthStatus.authenticated);
-  const AuthState.unauthenticated() : this._(AuthStatus.unauthenticated);
-  const AuthState.loading() : this._(AuthStatus.loading);
+  const AuthState.authenticated() : this._(status: AuthStatus.authenticated);
+  const AuthState.unauthenticated() : this._(status: AuthStatus.unauthenticated);
+  const AuthState.loading() : this._(status: AuthStatus.loading);
 }

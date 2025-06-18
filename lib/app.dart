@@ -5,8 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:collection/collection.dart';
 
 // Application
-import 'application/auth_controller.dart';
-import 'features/auth/application/auth_controller.dart';
+
 import 'features/employees/application/employee_controller.dart';
 
 // Domain
