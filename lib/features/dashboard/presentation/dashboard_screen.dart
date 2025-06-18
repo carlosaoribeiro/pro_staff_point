@@ -21,18 +21,17 @@ class DashboardScreen extends ConsumerWidget {
         title: 'Controle de Ponto',
         icon: Icons.access_time,
         onTap: () {
-          // TODO: Navegar para time_tracking
+          context.push('/time-tracking'); // 🚀 navega para a tela de ponto
         },
       ),
       _DashboardCard(
         title: 'Férias',
         icon: Icons.beach_access,
         onTap: () {
-          // TODO: Navegar para vacations
+          context.push('/vacations'); // navega para férias
         },
       ),
     ];
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard'),
